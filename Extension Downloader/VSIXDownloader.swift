@@ -53,11 +53,9 @@ func downloadVSIX(
                 NSLocalizedDescriptionKey: "Invalid HTTP response. Status Code: \(httpResponse.statusCode)"
             ]
             // Attempt to read error message from response body if download failed
-            if let tempUrlError = temporaryURL { // temporaryURL might still exist for error responses
-                 if let data = try? Data(contentsOf: tempUrlError), let errorMessage = String(data: data, encoding: .utf8) {
-                    errorInfo[NSLocalizedFailureReasonErrorKey] = errorMessage
-                    print("Error response body: \(errorMessage)")
-                }
+            if let data = try? Data(contentsOf: temporaryURL), let errorMessage = String(data: data, encoding: .utf8) {
+                errorInfo[NSLocalizedFailureReasonErrorKey] = errorMessage
+                print("Error response body: \(errorMessage)")
             }
             return (nil, .networkError(NSError(domain: "VSIXDownloader", code: httpResponse.statusCode, userInfo: errorInfo)))
         }
