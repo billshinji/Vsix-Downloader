@@ -1,7 +1,4 @@
 //
-//  Extension_DownloaderApp.swift
-//  Extension Downloader
-//
 //  Created by William Shinji on 2025-06-18.
 //
 
