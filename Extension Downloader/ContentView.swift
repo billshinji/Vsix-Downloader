@@ -40,7 +40,7 @@ struct ContentView: View {
                         .font(.system(.body, design: .monospaced))
                         .border(Color.gray, width: 1)
                         .disabled(true)
-                    Text("Engine made by Han Kyeol Kim, UI by William, 2025, free to use. Happy coding! :-)")
+                    Text("Engine made by Han Kyeol Kim, UI by William, 2025, free to use. happy coding! :-)")
                         .font(.footnote)
                         .foregroundColor(.secondary)
                 }
@@ -48,7 +48,7 @@ struct ContentView: View {
         }
         .navigationTitle("VSIX Downloader")
         .padding(10)
-        .frame(minWidth: 400)
+        .frame(minWidth: 600)
     }
 
     private func initiateDownload() {

@@ -6,7 +6,7 @@ struct WindowAccessor: NSViewRepresentable {
         DispatchQueue.main.async {
             if let window = nsView.window {
                 window.styleMask.insert(.resizable)
-                window.setContentSize(window.contentView?.intrinsicContentSize ?? NSSize(width: 700, height: 400))
+                window.setContentSize(window.contentView?.intrinsicContentSize ?? NSSize(width: 400, height: 400))
                 window.center()
                 window.isReleasedWhenClosed = false
             }
