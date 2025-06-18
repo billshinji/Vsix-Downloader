@@ -5,59 +5,61 @@ struct ContentView: View {
     @State private var extensionName: String = ""
     @State private var version: String = ""
     @State private var targetPlatform: String = "" // Optional
-
-    @State private var isShowingAlert: Bool = false
-    @State private var alertTitle: String = ""
-    @State private var alertMessage: String = ""
+    @State private var logMessages: String = ""
 
     @State private var isDownloading: Bool = false
 
     var body: some View {
-        NavigationView {
-            Form {
-                Section(header: Text("Extension Details")) {
-                    TextField("Publisher Name (e.g., ms-vscode)", text: $publisherName)
-                    TextField("Extension Name (e.g., cpptools)", text: $extensionName)
-                    TextField("Version (e.g., 1.20.5)", text: $version)
-                    TextField("Target Platform (optional, e.g., darwin-arm64)", text: $targetPlatform)
-                }
-
-                Section {
-                    Button(action: {
-                        initiateDownload()
-                    }) {
-                        HStack {
-                            if isDownloading {
-                                ProgressView()
-                                Text("Downloading...")
-                                    .padding(.leading, 5)
-                            } else {
-                                Image(systemName: "icloud.and.arrow.down")
-                                Text("Download VSIX")
-                            }
-                        }
-                        .frame(maxWidth: .infinity)
-                    }
-                    .disabled(isDownloading || publisherName.isEmpty || extensionName.isEmpty || version.isEmpty)
-                }
+        Form {
+            Section(header: Text("Fill in the info and get the VSIX")) {
+                TextField("Publisher Name", text: $publisherName, prompt: Text("ms-vscode"))
+                TextField("Extension Name", text: $extensionName, prompt: Text("cpptools"))
+                TextField("Version", text: $version, prompt: Text("1.20.5"))
+                TextField("Target Platform", text: $targetPlatform, prompt: Text("darwin-arm64 (optional)"))
             }
-            .navigationTitle("VSIX Downloader")
-            .alert(isPresented: $isShowingAlert) {
-                Alert(title: Text(alertTitle), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+
+            Section {
+                Button(action: initiateDownload) {
+                    HStack {
+                        if isDownloading {
+                            ProgressView()
+                                .scaleEffect(0.4, anchor: .center)
+                                .frame(width: 12, height: 12)
+                            Text("Downloading...")
+                                .padding(.leading, 5)
+                        } else {
+                            Image(systemName: "icloud.and.arrow.down")
+                            Text("Download VSIX")
+                        }
+                    }
+                }
+                .disabled(isDownloading || publisherName.isEmpty || extensionName.isEmpty || version.isEmpty)
+                VStack(alignment: .leading) {
+                    TextEditor(text: $logMessages)
+                        .frame(minHeight: 100)
+                        .font(.system(.body, design: .monospaced))
+                        .border(Color.gray, width: 1)
+                        .disabled(true)
+                    Text("Engine made by Han Kyeol Kim, UI by William, 2025, free to use. Happy coding! :-)")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                }
             }
         }
+        .navigationTitle("VSIX Downloader")
+        .padding(10)
+        .frame(minWidth: 400)
     }
 
     private func initiateDownload() {
         // Basic validation
         guard !publisherName.isEmpty, !extensionName.isEmpty, !version.isEmpty else {
-            alertTitle = "Missing Information"
-            alertMessage = "Please fill in Publisher Name, Extension Name, and Version."
-            isShowingAlert = true
+            logMessages += "[ERROR] Please fill in Publisher Name, Extension Name, and Version.\n"
             return
         }
 
         isDownloading = true
+        logMessages += "[INFO] Starting download...\n"
 
         Task {
             let platformToUse = targetPlatform.isEmpty ? nil : targetPlatform
@@ -69,30 +71,26 @@ struct ContentView: View {
             )
 
             if let error = error {
-                alertTitle = "Download Failed"
                 // Provide a more user-friendly error message
                 switch error {
                 case .invalidURL:
-                    alertMessage = "The provided information resulted in an invalid URL. Please check the inputs."
+                    logMessages += "[ERROR] The provided information resulted in an invalid URL. Please check the inputs.\n"
                 case .networkError(let nsError):
-                    alertMessage = "Network error: \(nsError.localizedDescription)"
+                    logMessages += "[ERROR] Network error: \(nsError.localizedDescription)\n"
                 case .fileMoveError(let nsError):
-                    alertMessage = "Failed to save the file: \(nsError.localizedDescription)"
+                    logMessages += "[ERROR] Failed to save the file: \(nsError.localizedDescription)\n"
                 case .documentDirectoryNotFound:
-                    alertMessage = "Could not access the app's document directory."
+                    logMessages += "[ERROR] Could not access the app's document directory.\n"
                 case .invalidResponse:
-                    alertMessage = "Received an invalid response from the server."
+                    logMessages += "[ERROR] Received an invalid response from the server.\n"
                 }
             } else if let fileURL = fileURL {
-                alertTitle = "Download Successful"
-                alertMessage = "File saved to: \(fileURL.path)"
+                logMessages += "[SUCCESS] File saved to: \(fileURL.path)\n"
             } else {
                 // Should not happen if error is nil and fileURL is nil, but as a fallback
-                alertTitle = "Unknown Error"
-                alertMessage = "An unexpected error occurred during the download."
+                logMessages += "[ERROR] An unexpected error occurred during the download.\n"
             }
 
-            isShowingAlert = true
             isDownloading = false
         }
     }

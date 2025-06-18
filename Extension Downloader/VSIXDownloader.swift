@@ -61,7 +61,7 @@ func downloadVSIX(
         }
 
         // 3. Save the file
-        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+        guard let documentsDirectory = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first else {
             print("Error: Could not find documents directory")
             return (nil, .documentDirectoryNotFound)
         }
