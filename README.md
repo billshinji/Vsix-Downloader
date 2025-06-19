@@ -1,1 +1,1 @@
-![Screenshot](images/screenshot.png)
+![Screenshot](macOS/images/screenshot.png)
