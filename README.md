@@ -21,6 +21,6 @@ macOS application that allows you to download VSIX files from the Visual Studio 
 
 ## Credits
 
-- Download engine: Han Kyeol Kim
-- UI: William
-- Free to use
+- Core logic: Han Kyeol Kim
+- UI: William (Jihean)
+- Free to use! :-)
